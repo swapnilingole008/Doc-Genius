@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test History — Doc Genius</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-style.css') }}">
+    <style>
+        .history-table-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+        }
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .history-table th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .history-table td {
+            padding: 16px;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        .history-table tr:hover td {
+            background: var(--bg-surface-elevated);
+        }
+        .score-pill {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: var(--radius-full);
+            font-weight: 700;
+            font-size: 0.82rem;
+        }
+        .score-pill.high { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); }
+        .score-pill.mid { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); }
+        .score-pill.low { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); }
+        .empty-history {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="glow-bg"></div>
+
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="/dashboard" class="brand-link">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <path d="M12 18v-6"></path>
+                        <path d="M9 15l3 3 3-3"></path>
+                    </svg>
+                </div>
+                <div class="brand-meta">
+                    <div class="brand-title">Doc Genius</div>
+                    <span class="brand-badge">Test History</span>
+                </div>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="/dashboard" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/chat" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span>Q&A Chat</span>
+                </a>
+                <a href="/tests" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    <span>Exam Mode</span>
+                </a>
+                <a href="/history" class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>History</span>
+                </a>
+            </nav>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="action-btn" onclick="toggleTheme()" title="Toggle Theme">
+                    <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content" style="max-width: 1050px;">
+        <div class="history-table-card">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+                <div>
+                    <h2>Assessment Attempt Records</h2>
+                    <p class="subtitle">All past exam attempts stored in your MySQL database.</p>
+                </div>
+                <a href="/tests" class="btn btn-primary btn-sm">
+                    + Take New Exam
+                </a>
+            </div>
+
+            <div id="history-content">
+                <div class="empty-history">Loading test history...</div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Detail Modal -->
+    <div class="modal-backdrop" id="detail-modal" style="display: none;">
+        <div class="modal-dialog" style="max-width: 800px;">
+            <div class="modal-header">
+                <div>
+                    <h2>Exam Review</h2>
+                    <p class="modal-subtitle">Review questions, answers, and document citations</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeDetailModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-questions-list" style="display: flex; flex-direction: column; gap: 16px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function initTheme() {
+            if (localStorage.getItem('docgenius-theme') === 'light') {
+                document.body.classList.add('light');
+            }
+        }
+        function toggleTheme() {
+            const isLight = document.body.classList.toggle('light');
+            localStorage.setItem('docgenius-theme', isLight ? 'light' : 'dark');
+        }
+
+        async function loadHistory() {
+            const container = document.getElementById('history-content');
+            try {
+                const res = await fetch('/api/my_tests/guest_user');
+                const list = await res.json();
+
+                if (!list || list.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-history">
+                            <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 6px;">No exams taken yet</p>
+                            <p>Upload a document and head to Exam Mode to test your knowledge.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date &amp; Time</th>
+                                <th>Source Document</th>
+                                <th>Difficulty</th>
+                                <th>Score</th>
+                                <th>Percentage</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${list.map(t => {
+                                const pct = t.percentage;
+                                const pillClass = pct >= 80 ? 'high' : (pct >= 50 ? 'mid' : 'low');
+                                return `
+                                    <tr>
+                                        <td>${t.taken_at}</td>
+                                        <td style="font-weight: 600;">${t.source_title}</td>
+                                        <td style="text-transform: capitalize;">${t.difficulty}</td>
+                                        <td>${t.score} / ${t.total}</td>
+                                        <td><span class="score-pill ${pillClass}">${pct}%</span></td>
+                                        <td>
+                                            <button class="btn btn-secondary btn-sm" onclick="inspectTest(${t.test_id})">
+                                                Review
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (e) {
+                container.innerHTML = `<div class="empty-history" style="color: var(--accent-rose);">Failed to load history from database.</div>`;
+            }
+        }
+
+        async function inspectTest(testId) {
+            const modal = document.getElementById('detail-modal');
+            const list = document.getElementById('modal-questions-list');
+            modal.style.display = 'flex';
+            list.innerHTML = '<div style="text-align: center; padding: 20px;">Loading questions...</div>';
+
+            try {
+                const res = await fetch(`/api/test_detail/${testId}`);
+                const data = await res.json();
+
+                if (!data.questions || data.questions.length === 0) {
+                    list.innerHTML = '<div>No questions found for this exam.</div>';
+                    return;
+                }
+
+                list.innerHTML = data.questions.map((q, idx) => `
+                    <div style="background: var(--bg-surface-elevated); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                        <div style="font-size: 0.76rem; font-weight: 700; color: var(--accent-indigo); text-transform: uppercase; margin-bottom: 6px;">
+                            ${q.topic}
+                        </div>
+                        <div style="font-weight: 700; margin-bottom: 10px;">${idx + 1}. ${q.question}</div>
+                        <div style="font-size: 0.88rem; margin-bottom: 8px;">
+                            <strong>Correct Answer:</strong> ${q.correct_option.toUpperCase()}: ${q.options[q.correct_option]}
+                        </div>
+                        ${q.explanation ? `
+                            <div style="font-size: 0.82rem; color: var(--text-secondary); background: rgba(99, 102, 241, 0.08); padding: 8px 12px; border-radius: 6px;">
+                                <strong>Explanation:</strong> ${q.explanation}
+                            </div>
+                        ` : ''}
+                    </div>
+                `).join('');
+            } catch (e) {
+                list.innerHTML = '<div style="color: var(--accent-rose);">Failed to load test details.</div>';
+            }
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detail-modal').style.display = 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadHistory();
+        });
+    </script>
+</body>
+</html>

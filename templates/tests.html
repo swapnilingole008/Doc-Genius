@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Mode — Doc Genius</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tests-style.css') }}">
+</head>
+<body>
+    <div class="glow-bg"></div>
+
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="/dashboard" class="brand-link">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <path d="M12 18v-6"></path>
+                        <path d="M9 15l3 3 3-3"></path>
+                    </svg>
+                </div>
+                <div class="brand-meta">
+                    <div class="brand-title">Doc Genius</div>
+                    <span class="brand-badge">Exam Mode</span>
+                </div>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="/dashboard" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/chat" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span>Q&A Chat</span>
+                </a>
+                <a href="/tests" class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    <span>Exam Mode</span>
+                </a>
+                <a href="/history" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>History</span>
+                </a>
+            </nav>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="action-btn" onclick="toggleTheme()" title="Toggle Theme">
+                    <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- 1. SETUP VIEW -->
+        <section id="setup-view" class="exam-card">
+            <div class="exam-header">
+                <div class="exam-icon purple">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h2>Generate Assessment</h2>
+                    <p class="subtitle">AI generates fresh multiple-choice questions strictly from your indexed document.</p>
+                </div>
+            </div>
+
+            <div class="setup-form">
+                <!-- Active document alert -->
+                <div class="doc-indicator-card" id="doc-indicator-card">
+                    <span class="indicator-icon">📄</span>
+                    <div>
+                        <div class="indicator-label">Active Document</div>
+                        <div class="indicator-title" id="setup-doc-title">Checking active notes...</div>
+                    </div>
+                </div>
+
+                <!-- Difficulty selection -->
+                <div class="form-group">
+                    <label class="group-label">Select Difficulty</label>
+                    <div class="pills-grid" id="difficulty-pills">
+                        <button type="button" class="pill-btn active" data-diff="easy" onclick="selectDifficulty('easy')">
+                            <span class="pill-title">Easy</span>
+                            <span class="pill-sub">Definitions &amp; Core Recall</span>
+                        </button>
+                        <button type="button" class="pill-btn" data-diff="medium" onclick="selectDifficulty('medium')">
+                            <span class="pill-title">Medium</span>
+                            <span class="pill-sub">Application &amp; Analysis</span>
+                        </button>
+                        <button type="button" class="pill-btn" data-diff="hard" onclick="selectDifficulty('hard')">
+                            <span class="pill-title">Hard</span>
+                            <span class="pill-sub">Deep Reasoning &amp; Scenarios</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Question Count selection -->
+                <div class="form-group">
+                    <label class="group-label">Number of Questions</label>
+                    <div class="count-grid" id="count-pills">
+                        <button type="button" class="count-btn" data-count="5" onclick="selectCount(5)">5 Questions</button>
+                        <button type="button" class="count-btn active" data-count="10" onclick="selectCount(10)">10 Questions</button>
+                        <button type="button" class="count-btn" data-count="15" onclick="selectCount(15)">15 Questions</button>
+                        <button type="button" class="count-btn" data-count="20" onclick="selectCount(20)">20 Questions</button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="button" id="generate-btn" class="btn btn-primary btn-block" onclick="generateExam()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <span>Generate &amp; Start Exam</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. QUIZ RUNNER VIEW -->
+        <section id="runner-view" class="exam-card" style="display: none;">
+            <div class="runner-topbar">
+                <div class="runner-meta">
+                    <span class="badge-tag" id="q-topic-tag">General</span>
+                    <span class="q-progress-text" id="q-progress-text">Question 1 of 10</span>
+                </div>
+                <div class="runner-timer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span id="elapsed-time">00:00</span>
+                </div>
+            </div>
+
+            <!-- Progress Track -->
+            <div class="runner-track">
+                <div class="runner-fill" id="runner-fill" style="width: 10%;"></div>
+            </div>
+
+            <!-- Question Area -->
+            <div class="question-container">
+                <h3 class="question-text" id="question-text">Loading question...</h3>
+                <div class="options-grid" id="options-grid"></div>
+            </div>
+
+            <!-- Question Navigator -->
+            <div class="question-nav-strip" id="nav-strip"></div>
+
+            <!-- Bottom Action Controls -->
+            <div class="runner-actions">
+                <button type="button" class="btn btn-secondary" id="prev-btn" onclick="goToPrevQuestion()">
+                    ← Previous
+                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="btn btn-secondary" onclick="confirmQuitExam()">
+                        Quit
+                    </button>
+                    <button type="button" class="btn btn-primary" id="next-btn" onclick="goToNextQuestion()">
+                        Next →
+                    </button>
+                    <button type="button" class="btn btn-primary" id="submit-btn" style="display: none;" onclick="submitExam()">
+                        Submit Exam ✓
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. RESULTS VIEW -->
+        <section id="results-view" class="exam-card" style="display: none;">
+            <div class="results-header">
+                <div class="score-ring" id="score-ring">
+                    <span id="score-percentage">0%</span>
+                </div>
+                <div>
+                    <h2 id="results-headline">Exam Complete!</h2>
+                    <p class="subtitle" id="results-summary-text">You scored 8 out of 10.</p>
+                </div>
+            </div>
+
+            <div class="results-actions">
+                <button type="button" class="btn btn-primary" onclick="resetToSetup()">
+                    Take Another Exam
+                </button>
+                <a href="/chat" class="btn btn-secondary">
+                    Review Concepts in Chat
+                </a>
+                <a href="/history" class="btn btn-secondary">
+                    View in History
+                </a>
+            </div>
+
+            <!-- Question-by-question review -->
+            <div class="review-section">
+                <h3>Detailed Answers &amp; Document Explanations</h3>
+                <div class="review-list" id="review-list"></div>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/tests-script.js') }}"></script>
+</body>
+</html>

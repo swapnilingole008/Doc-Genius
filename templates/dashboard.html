@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doc Genius — Intelligent PDF Q&A & Exam Engine</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard-style.css') }}">
+</head>
+<body>
+    <div class="glow-bg"></div>
+
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="/dashboard" class="brand-link">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <path d="M12 18v-6"></path>
+                        <path d="M9 15l3 3 3-3"></path>
+                    </svg>
+                </div>
+                <div class="brand-meta">
+                    <div class="brand-title">Doc Genius</div>
+                    <span class="brand-badge">AI Document Tutor</span>
+                </div>
+            </a>
+
+            <nav class="nav-menu">
+                <a href="/dashboard" class="nav-item active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/chat" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                    <span>Q&A Chat</span>
+                </a>
+                <a href="/tests" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                    <span>Exam Mode</span>
+                </a>
+                <a href="/history" class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    <span>History</span>
+                </a>
+            </nav>
+
+            <div class="header-actions">
+                <button id="theme-toggle" class="action-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+                    <svg id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span>
+                <span>Powered by RAG &amp; Gemini 2.5 Flash</span>
+            </div>
+            <h1 class="hero-title">Learn Faster with <span class="gradient-text">Doc Genius</span></h1>
+            <p class="hero-subtitle">Upload any PDF textbook or notes to extract answers in Normal and regional Vibe modes, or test your mastery with AI-generated exams.</p>
+
+            <div id="status-pill" class="status-pill loading">
+                <span class="status-icon">⏳</span>
+                <span id="status-text">Checking document status...</span>
+            </div>
+        </section>
+
+        <!-- Main Grid -->
+        <div class="dashboard-grid">
+            <!-- Left Card: Document Ingestion -->
+            <div class="card doc-card">
+                <div class="card-header">
+                    <div class="card-title-group">
+                        <div class="card-icon indigo">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        </div>
+                        <div>
+                            <h2>Document Manager</h2>
+                            <p class="card-subtitle">Upload your notes or choose sample material</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dropzone -->
+                <div class="dropzone" id="pdf-dropzone" onclick="document.getElementById('file-input').click()">
+                    <input type="file" id="file-input" accept=".pdf" multiple style="display: none;" onchange="handleFileSelect(event)">
+                    <div class="dropzone-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="40" height="40">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                    </div>
+                    <div class="dropzone-title">Click to upload or drag &amp; drop PDF</div>
+                    <div class="dropzone-hint">Supports multi-page textbook chapters, research papers, and lecture notes</div>
+                </div>
+
+                <div class="library-action">
+                    <span>Don't have a PDF right now?</span>
+                    <button class="btn btn-secondary btn-sm" onclick="openBooksModal()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                        Browse Sample Books
+                    </button>
+                </div>
+
+                <!-- Staged Documents Section -->
+                <div class="staged-section">
+                    <div class="staged-header">
+                        <h3>Selected Documents</h3>
+                        <button class="text-btn danger" onclick="clearAllFiles()" id="clear-all-btn" style="display: none;">Clear All</button>
+                    </div>
+                    <div id="staged-list" class="staged-list">
+                        <div class="empty-staged">No documents added yet. Upload a PDF above to begin.</div>
+                    </div>
+                </div>
+
+                <!-- Process Button -->
+                <div class="process-wrapper">
+                    <button id="process-btn" class="btn btn-primary btn-block" onclick="processDocuments()" disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        <span>Process &amp; Index Document</span>
+                    </button>
+                    <div id="process-progress" class="process-progress" style="display: none;">
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" id="progress-bar-fill"></div>
+                        </div>
+                        <div class="progress-status-text" id="progress-status-text">Extracting text &amp; generating embeddings...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Features Navigation -->
+            <div class="features-column">
+                <!-- Tile 1: Q&A Chat -->
+                <a href="/chat" class="feature-card chat-feature">
+                    <div class="feature-header">
+                        <div class="feature-icon f-cyan">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="feature-pill">RAG Conversational Q&amp;A</span>
+                    </div>
+                    <h3 class="feature-title">Q&amp;A Chat &amp; Vibe Modes</h3>
+                    <p class="feature-desc">Ask specific questions from your uploaded document. Switch between precise academic explanations and casual regional personas.</p>
+                    <div class="vibe-tags">
+                        <span class="vibe-tag">📘 Normal Mode</span>
+                        <span class="vibe-tag">🎓 Professor Mode</span>
+                        <span class="vibe-tag">🌴 Mumbai Bhai</span>
+                        <span class="vibe-tag">👑 Hyderabadi Mia</span>
+                        <span class="vibe-tag">🌾 Punjab Puttar</span>
+                    </div>
+                    <div class="feature-cta">
+                        <span>Open Chat</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </div>
+                </a>
+
+                <!-- Tile 2: Exam Mode -->
+                <a href="/tests" class="feature-card exam-feature">
+                    <div class="feature-header">
+                        <div class="feature-icon f-purple">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                                <path d="M2 17l10 5 10-5"></path>
+                                <path d="M2 12l10 5 10-5"></path>
+                            </svg>
+                        </div>
+                        <span class="feature-pill">Interactive Assessment</span>
+                    </div>
+                    <h3 class="feature-title">Exam Mode &amp; Quiz Engine</h3>
+                    <p class="feature-desc">Generate tailored MCQs directly from your document's key concepts. Choose difficulty, set question counts, and get instant answers with detailed explanations.</p>
+                    <div class="exam-features-list">
+                        <span>✨ Easy, Medium, Hard Levels</span>
+                        <span>⚡ 5 to 20 Questions</span>
+                        <span>🎯 Instant Scoring &amp; Explanations</span>
+                    </div>
+                    <div class="feature-cta">
+                        <span>Take an Exam</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </div>
+                </a>
+
+                <!-- Tile 3: History -->
+                <a href="/history" class="feature-card history-feature">
+                    <div class="feature-header">
+                        <div class="feature-icon f-amber">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                        <span class="feature-pill">Attempt Records</span>
+                    </div>
+                    <h3 class="feature-title">Test History</h3>
+                    <p class="feature-desc">Review your past scores, questions, and detailed document explanations anytime without cluttered graphs.</p>
+                    <div class="feature-cta">
+                        <span>View Past Attempts</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Books Modal -->
+    <div class="modal-backdrop" id="books-modal" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <div>
+                    <h2>Pre-Uploaded Library</h2>
+                    <p class="modal-subtitle">Pick a standard book to stage it immediately into your documents</p>
+                </div>
+                <button class="modal-close-btn" onclick="closeBooksModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="books-grid" id="books-grid">
+                    <div class="loading-state">Loading books...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/dashboard-script.js') }}"></script>
+</body>
+</html>

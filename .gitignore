@@ -1,0 +1,11 @@
+.env
+env
+static/js/firebase-config.js
+/.vscode
+questions.db
+__pycache__
+firebase-service-account.json
+scrapers/
+/venv
+/venv311
+/temp
